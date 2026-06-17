@@ -1,0 +1,28 @@
+{
+  "_comment": "Abbreviated device type response showing channel schema. Real responses have additional metadata fields.",
+  "id": "503e9680-9cfe-11ef-ab39-af8ef6cf829f",
+  "name": "Vutility HotDrop 5.0",
+  "description": "Easy-to-scale CT clamp energy metering solution providing minute-by-minute data.",
+  "manufacturer": "Vutility",
+  "model": "Hotdrop",
+  "transport_protocol": "lorawan",
+  "channels": [
+    {"channel": "100", "name": "RSSI", "data": {"units": [{"label": "dBm", "payload": "dbm", "display": " dBm", "default": true}], "template": "value"}},
+    {"channel": "124", "name": "Capacitor Voltage", "data": {"units": [{"label": "Volts", "payload": "v", "display": " V", "default": true}], "template": "value"}},
+    {"channel": "125", "name": "Internal Temperature", "data": {"units": [{"label": "Celsius", "payload": "c", "display": "°C", "default": false}, {"label": "Fahrenheit", "payload": "f", "display": "°F", "default": true}], "template": "value"}},
+    {"channel": "126", "name": "Current", "data": {"units": [{"label": "Ampere", "payload": "a", "display": " A", "default": true}], "template": "value"}},
+    {"channel": "127", "name": "Power", "data": {"units": [{"label": "Kilowatts", "payload": "kw", "display": "kW", "default": true}, {"label": "Watts", "payload": "w", "display": "W", "default": false}], "template": "value"}},
+    {"channel": "128", "name": "Energy (Total)", "data": {"units": [{"label": "Killowatt Hour", "payload": "kwh", "display": "kWh", "default": true}], "template": "value"}},
+    {"channel": "129", "name": "Min Current", "data": {"units": [{"label": "Ampere", "payload": "a", "display": " A", "default": true}], "template": "value"}},
+    {"channel": "130", "name": "Max Current", "data": {"units": [{"label": "Ampere", "payload": "a", "display": " A", "default": true}], "template": "value"}},
+    {"channel": "135", "name": "Kilo Ampere Hour (Total)", "data": {"units": [{"label": "kAh", "payload": "kah", "display": "kAh", "default": true}], "template": "value"}},
+    {"channel": "501", "name": "Kilo Ampere Hour (Last Hour)", "data": {"units": [{"label": "kAh", "payload": "kah", "display": "kAh", "default": true}], "template": "value"}},
+    {"channel": "502", "name": "Kilo Ampere Hour (Last 24 Hour)", "data": {"units": [{"label": "kAh", "payload": "kah", "display": "kAh", "default": true}], "template": "value"}},
+    {"channel": "503", "name": "Energy (Last Hour)", "data": {"units": [{"label": "Killowatt Hour", "payload": "kwh", "display": "kWh", "default": true}], "template": "value"}},
+    {"channel": "504", "name": "Energy (Last 24 Hour)", "data": {"units": [{"label": "Killowatt Hour", "payload": "kwh", "display": "kWh", "default": true}], "template": "value"}},
+    {"channel": "506", "name": "Total Time Machine Down  (Last 24 hours)", "data": {"units": [{"label": "Hours", "payload": "hours", "display": "Hour(s)", "default": true}], "template": "value"}},
+    {"channel": "507", "name": "Total Time Machine Running Time (Last 24 hours)", "data": {"units": [{"label": "Hours", "payload": "hours", "display": "Hour(s)", "default": true}], "template": "value"}},
+    {"channel": "510", "name": "Multipler", "data": {"units": [{"label": "null", "payload": "null", "display": "null", "default": true}], "template": "value"}},
+    {"channel": "511", "name": "Device Status", "data": {"statuses": [{"value": "1", "label": "Normal"}, {"value": "0", "label": "Failure"}], "template": "status"}}
+  ]
+}

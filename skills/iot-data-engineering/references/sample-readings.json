@@ -1,0 +1,134 @@
+{
+  "_comment": "5 sample readings showing device ON, OFF, and transitional states.",
+  "units": [
+    {"channel": "124", "from": "v"},
+    {"channel": "125", "from": "c"},
+    {"channel": "126", "from": "a"},
+    {"channel": "127", "from": "w"},
+    {"channel": "128", "from": "kwh"},
+    {"channel": "129", "from": "a"},
+    {"channel": "130", "from": "a"},
+    {"channel": "135", "from": "kah"},
+    {"channel": "501", "from": "kah"},
+    {"channel": "502", "from": "kah"},
+    {"channel": "503", "from": "kwh"},
+    {"channel": "504", "from": "kwh"},
+    {"channel": "506", "from": "hours"},
+    {"channel": "507", "from": "hours"},
+    {"channel": "510", "from": "null"},
+    {"channel": "511", "from": "d"},
+    {"channel": "100", "from": "dbm"}
+  ],
+  "readings": [
+    {
+      "_state": "ON — device running, current > 0",
+      "ts": 1781270615967,
+      "sensors": [
+        {"v": -31, "channel": "100"},
+        {"v": 4.90, "channel": "124"},
+        {"v": 17.41, "channel": "125"},
+        {"v": 5.6, "channel": "126"},
+        {"v": 672, "channel": "127"},
+        {"v": 34.068, "channel": "128"},
+        {"v": 0, "channel": "129"},
+        {"v": 5.656, "channel": "130"},
+        {"v": 0.0013, "channel": "501"},
+        {"v": 0.0084, "channel": "502"},
+        {"v": 0.156, "channel": "503"},
+        {"v": 1.008, "channel": "504"},
+        {"v": 1, "value_text": "00:49:35", "channel": "506"},
+        {"v": 1, "value_text": "01:30:01", "channel": "507"},
+        {"v": 1, "channel": "510"},
+        {"v": 1, "channel": "511"}
+      ]
+    },
+    {
+      "_state": "ON — higher current spike (peak event)",
+      "ts": 1781270556011,
+      "sensors": [
+        {"v": -41, "channel": "100"},
+        {"v": 4.92, "channel": "124"},
+        {"v": 17.41, "channel": "125"},
+        {"v": 7.1, "channel": "126"},
+        {"v": 852, "channel": "127"},
+        {"v": 34.056, "channel": "128"},
+        {"v": 0, "channel": "129"},
+        {"v": 20.945, "channel": "130"},
+        {"v": 0.0012, "channel": "501"},
+        {"v": 0.0083, "channel": "502"},
+        {"v": 0.144, "channel": "503"},
+        {"v": 0.996, "channel": "504"},
+        {"v": 1, "value_text": "00:49:35", "channel": "506"},
+        {"v": 1, "value_text": "01:29:01", "channel": "507"},
+        {"v": 1, "channel": "510"},
+        {"v": 1, "channel": "511"}
+      ]
+    },
+    {
+      "_state": "OFF — current=0, power=0, device_status=0 (Failure/Off)",
+      "ts": 1781270497745,
+      "sensors": [
+        {"v": -37, "channel": "100"},
+        {"v": 4.78, "channel": "124"},
+        {"v": 17.41, "channel": "125"},
+        {"v": 0, "channel": "126"},
+        {"v": 0, "channel": "127"},
+        {"v": 34.044, "channel": "128"},
+        {"v": 0, "channel": "129"},
+        {"v": 0, "channel": "130"},
+        {"v": 0.0011, "channel": "501"},
+        {"v": 0.0082, "channel": "502"},
+        {"v": 0.132, "channel": "503"},
+        {"v": 0.984, "channel": "504"},
+        {"v": 1, "value_text": "00:49:35", "channel": "506"},
+        {"v": 1, "value_text": "01:28:03", "channel": "507"},
+        {"v": 1, "channel": "510"},
+        {"v": 0, "channel": "511"}
+      ]
+    },
+    {
+      "_state": "OFF — idle continuing",
+      "ts": 1781270438108,
+      "sensors": [
+        {"v": -37, "channel": "100"},
+        {"v": 4.80, "channel": "124"},
+        {"v": 17.41, "channel": "125"},
+        {"v": 0, "channel": "126"},
+        {"v": 0, "channel": "127"},
+        {"v": 34.044, "channel": "128"},
+        {"v": 0, "channel": "129"},
+        {"v": 0, "channel": "130"},
+        {"v": 0.0011, "channel": "501"},
+        {"v": 0.0082, "channel": "502"},
+        {"v": 0.132, "channel": "503"},
+        {"v": 0.984, "channel": "504"},
+        {"v": 1, "value_text": "00:48:35", "channel": "506"},
+        {"v": 1, "value_text": "01:28:03", "channel": "507"},
+        {"v": 1, "channel": "510"},
+        {"v": 0, "channel": "511"}
+      ]
+    },
+    {
+      "_state": "TRANSITIONAL — low current, device turning on",
+      "ts": 1781270261853,
+      "sensors": [
+        {"v": -39, "channel": "100"},
+        {"v": 4.90, "channel": "124"},
+        {"v": 17.41, "channel": "125"},
+        {"v": 0.5, "channel": "126"},
+        {"v": 60, "channel": "127"},
+        {"v": 34.044, "channel": "128"},
+        {"v": 0, "channel": "129"},
+        {"v": 0.62, "channel": "130"},
+        {"v": 0.0011, "channel": "501"},
+        {"v": 0.0082, "channel": "502"},
+        {"v": 0.132, "channel": "503"},
+        {"v": 0.984, "channel": "504"},
+        {"v": 1, "value_text": "00:45:39", "channel": "506"},
+        {"v": 1, "value_text": "01:28:02", "channel": "507"},
+        {"v": 1, "channel": "510"},
+        {"v": 0, "channel": "511"}
+      ]
+    }
+  ]
+}

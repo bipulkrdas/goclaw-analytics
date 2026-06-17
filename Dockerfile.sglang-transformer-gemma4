@@ -1,0 +1,5 @@
+FROM lmsysorg/sglang:dev-gemma-4-12B
+
+RUN pip install 'git+https://github.com/huggingface/transformers.git@1423d22f7a3b62e8c70ad67b58ec25cd9b675897'
+
+ENV FLASHINFER_DISABLE_VERSION_CHECK=1

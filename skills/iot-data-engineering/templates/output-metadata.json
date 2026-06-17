@@ -1,0 +1,99 @@
+{
+  "_comment": "Template for the metadata JSON that accompanies every analytics table output.",
+  "columns": {
+    "timestamp": {
+      "description": "Reading timestamp in device local timezone",
+      "unit": "ISO 8601",
+      "timezone": "America/New_York"
+    },
+    "power_kw": {
+      "description": "Instantaneous power consumption",
+      "unit": "kW",
+      "source_channel": "127",
+      "source_name": "Power"
+    },
+    "energy_total_kwh": {
+      "description": "Cumulative energy meter reading (monotonically increasing)",
+      "unit": "kWh",
+      "source_channel": "128",
+      "source_name": "Energy (Total)"
+    },
+    "energy_last_hour_kwh": {
+      "description": "Energy consumed in the last rolling hour",
+      "unit": "kWh",
+      "source_channel": "503",
+      "source_name": "Energy (Last Hour)"
+    },
+    "energy_last_24h_kwh": {
+      "description": "Energy consumed in the last rolling 24 hours",
+      "unit": "kWh",
+      "source_channel": "504",
+      "source_name": "Energy (Last 24 Hour)"
+    },
+    "current_a": {
+      "description": "Average current draw during measurement interval",
+      "unit": "A",
+      "source_channel": "126",
+      "source_name": "Current"
+    },
+    "min_current_a": {
+      "description": "Minimum current recorded during measurement interval",
+      "unit": "A",
+      "source_channel": "129",
+      "source_name": "Min Current"
+    },
+    "max_current_a": {
+      "description": "Maximum current recorded during measurement interval",
+      "unit": "A",
+      "source_channel": "130",
+      "source_name": "Max Current"
+    },
+    "capacitor_voltage_v": {
+      "description": "Internal capacitor voltage (device health indicator)",
+      "unit": "V",
+      "source_channel": "124",
+      "source_name": "Capacitor Voltage"
+    },
+    "internal_temperature": {
+      "description": "Internal device temperature",
+      "unit": "°F",
+      "source_channel": "125",
+      "source_name": "Internal Temperature"
+    },
+    "machine_running_time": {
+      "description": "Total machine running time in last 24 hours (HH:MM:SS)",
+      "unit": "duration",
+      "source_channel": "507",
+      "source_name": "Total Time Machine Running Time (Last 24 hours)"
+    },
+    "machine_downtime": {
+      "description": "Total machine downtime in last 24 hours (HH:MM:SS)",
+      "unit": "duration",
+      "source_channel": "506",
+      "source_name": "Total Time Machine Down (Last 24 hours)"
+    },
+    "device_status": {
+      "description": "Binary device operational status",
+      "unit": "enum",
+      "values": {"1": "Normal", "0": "Failure"},
+      "source_channel": "511",
+      "source_name": "Device Status"
+    }
+  },
+  "device_info": {
+    "device_id": 4205892,
+    "device_name": "Air conditioning unit",
+    "device_type": "Vutility HotDrop 5.0",
+    "sensor_type": "Electric Meter",
+    "timezone": "America/New_York",
+    "voltage_setting": 120,
+    "power_factor": 1,
+    "multiplier": 1,
+    "reading_interval_minutes": 15
+  },
+  "row_count": 120,
+  "time_range": {
+    "start": "2026-06-12T09:30:00-04:00",
+    "end": "2026-06-12T14:30:00-04:00"
+  }
+}
