@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useIsMobile } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
@@ -34,6 +34,20 @@ export function TroyPage() {
 
   const handleSessionSelect = useCallback(
     (key: string) => {
+      if (locationId && assetId) {
+        navigate(`/troy/${locationId}/${assetId}/${encodeURIComponent(key)}`);
+      }
+    },
+    [navigate, locationId, assetId],
+  );
+
+  // Track newly created session keys (only these need association creation)
+  const [newSessionKey, setNewSessionKey] = useState<string | null>(null);
+  const [sessionsRefreshKey, setSessionsRefreshKey] = useState(0);
+
+  const handleNewSessionSelect = useCallback(
+    (key: string) => {
+      setNewSessionKey(key);
       if (locationId && assetId) {
         navigate(`/troy/${locationId}/${assetId}/${encodeURIComponent(key)}`);
       }
@@ -88,6 +102,8 @@ export function TroyPage() {
             assetType={assetId === locationId ? "location" : "device"}
             activeSessionKey={sessionKey}
             onSelect={handleSessionSelect}
+            onNewSession={handleNewSessionSelect}
+            refreshKey={sessionsRefreshKey}
           />
         </div>
       )}
@@ -99,6 +115,9 @@ export function TroyPage() {
             sessionKey={decodeURIComponent(sessionKey)}
             assetId={assetId!}
             assetType={assetId === locationId ? "location" : "device"}
+            isNewSession={newSessionKey === decodeURIComponent(sessionKey)}
+            onAssociationCreated={() => setNewSessionKey(null)}
+            onResponseComplete={() => setSessionsRefreshKey((n) => n + 1)}
           />
         </div>
       )}

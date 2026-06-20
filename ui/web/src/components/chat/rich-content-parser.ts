@@ -4,6 +4,11 @@
  * into structured RichBlock objects for rendering.
  */
 
+// <artifact type="react-ts" title="..." dependencies='{"recharts":"^2.12.0"}'>code</artifact>
+// Also matches unclosed tags (LLM output truncated before closing tag)
+const ARTIFACT_CLOSED_RE = /<artifact\s+type="([^"]+)"(?:\s+title="([^"]*)")?(?:\s+dependencies='([^']*)')?\s*>([\s\S]*?)<\/artifact>/;
+const ARTIFACT_OPEN_RE = /<artifact\s+type="([^"]+)"(?:\s+title="([^"]*)")?(?:\s+dependencies='([^']*)')?\s*>([\s\S]+)$/;
+
 // <media:image>, <media:video>, <media:audio>, <media:voice>, <media:document>
 const MEDIA_TAG_RE = /<media:(image|video|audio|voice|document|animation)>/g;
 
@@ -29,7 +34,8 @@ export type RichBlock =
   | { type: "file"; name: string; mime: string; content: string }
   | { type: "forward"; from: string; date: string }
   | { type: "reply"; sender: string; body: string }
-  | { type: "location"; lat: string; lng: string };
+  | { type: "location"; lat: string; lng: string }
+  | { type: "artifact"; template: string; title: string; code: string; dependencies: Record<string, string> };
 
 /** Parse message content into rich blocks for rendering */
 export function parseRichContent(content: string): RichBlock[] {
@@ -49,6 +55,22 @@ export function parseRichContent(content: string): RichBlock[] {
   if (replyMatch) {
     replyBlock = { type: "reply", sender: replyMatch[1]!, body: replyMatch[2]! };
     text = text.replace(REPLY_RE, "");
+  }
+
+  // Extract artifact block (max one per message)
+  // Try closed tag first, fall back to unclosed (LLM output truncated)
+  let artifactBlock: RichBlock | null = null;
+  const artifactMatch = text.match(ARTIFACT_CLOSED_RE) ?? text.match(ARTIFACT_OPEN_RE);
+  if (artifactMatch) {
+    const deps = artifactMatch[3] ? JSON.parse(artifactMatch[3]) as Record<string, string> : {};
+    artifactBlock = {
+      type: "artifact",
+      template: artifactMatch[1]!,
+      title: artifactMatch[2] || "Live Preview",
+      code: artifactMatch[4]!,
+      dependencies: deps,
+    };
+    text = text.replace(artifactMatch[0], "");
   }
 
   // Extract file blocks
@@ -87,6 +109,7 @@ export function parseRichContent(content: string): RichBlock[] {
   if (trimmed) blocks.push({ type: "markdown", content: trimmed });
 
   if (fileBlocks.length > 0) blocks.push(...fileBlocks);
+  if (artifactBlock) blocks.push(artifactBlock);
   if (replyBlock) blocks.push(replyBlock);
   if (locationBlock) blocks.push(locationBlock);
 

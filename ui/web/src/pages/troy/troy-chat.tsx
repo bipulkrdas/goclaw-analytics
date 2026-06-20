@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useRef } from "react";
+import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { useAuthStore } from "@/stores/use-auth-store";
 import { useHttp } from "@/hooks/use-ws";
 import { ChatThread } from "../chat/chat-thread";
@@ -12,14 +12,17 @@ interface TroyChatProps {
   sessionKey: string;
   assetId: string;
   assetType: string;
+  isNewSession: boolean;
+  onAssociationCreated: () => void;
+  onResponseComplete: () => void;
 }
 
-export function TroyChat({ sessionKey, assetId, assetType }: TroyChatProps) {
+export function TroyChat({ sessionKey, assetId, assetType, isNewSession, onAssociationCreated, onResponseComplete }: TroyChatProps) {
   const connected = useAuthStore((s) => s.connected);
   const http = useHttp();
   const [scrollTrigger, setScrollTrigger] = useState(0);
   const [files, setFiles] = useState<AttachedFile[]>([]);
-  const associationCreated = useRef(false);
+  const associationCreated = useRef<string | null>(null);
 
   const agentId = useMemo(() => {
     const { agentId: parsed } = parseSessionKey(sessionKey);
@@ -41,6 +44,15 @@ export function TroyChat({ sessionKey, assetId, assetType }: TroyChatProps) {
     addLocalMessage,
   } = useChatMessages(sessionKey, agentId);
 
+  // Refresh sessions list when agent finishes responding (label now available)
+  const prevIsBusyRef = useRef(false);
+  useEffect(() => {
+    if (prevIsBusyRef.current && !isBusy) {
+      onResponseComplete();
+    }
+    prevIsBusyRef.current = isBusy;
+  }, [isBusy, onResponseComplete]);
+
   const handleMessageAdded = useCallback(
     (msg: { role: "user" | "assistant" | "tool"; content: string; timestamp?: number }, key?: string) => {
       addLocalMessage(msg, key);
@@ -58,13 +70,17 @@ export function TroyChat({ sessionKey, assetId, assetType }: TroyChatProps) {
     (message: string, sendFiles?: AttachedFile[]) => {
       send(message, sessionKey, sendFiles);
       setScrollTrigger((n) => n + 1);
-      // Create asset_sessions association after first message (session now exists)
-      if (!associationCreated.current) {
-        associationCreated.current = true;
-        http.post("/v1/troy/asset-sessions", { assetId, assetType, sessionKey }).catch(() => {});
+      // Create asset_sessions association only for newly initiated chats, once
+      if (isNewSession && associationCreated.current !== sessionKey) {
+        associationCreated.current = sessionKey;
+        http.post("/v1/troy/asset-sessions", { assetId, assetType, sessionKey }).then(() => {
+          onAssociationCreated();
+        }).catch(() => {
+          associationCreated.current = null;
+        });
       }
     },
-    [sessionKey, send, http, assetId, assetType],
+    [sessionKey, send, http, assetId, assetType, isNewSession, onAssociationCreated],
   );
 
   const handleAbort = useCallback(() => {

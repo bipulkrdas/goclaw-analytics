@@ -21,6 +21,8 @@ interface TroySessionsProps {
   assetType: "location" | "device";
   activeSessionKey?: string;
   onSelect: (key: string) => void;
+  onNewSession: (key: string) => void;
+  refreshKey: number;
 }
 
 export function TroySessions({
@@ -28,6 +30,8 @@ export function TroySessions({
   assetType,
   activeSessionKey,
   onSelect,
+  onNewSession,
+  refreshKey,
 }: TroySessionsProps) {
   const http = useHttp();
   const [sessions, setSessions] = useState<AssetSession[]>([]);
@@ -51,18 +55,28 @@ export function TroySessions({
 
   useEffect(() => {
     fetchSessions();
-  }, [fetchSessions]);
+  }, [fetchSessions, refreshKey]);
 
   // Update session label when backend generates a title after first message
+  // Also refetch if event is for a session not yet in our list (newly created)
   const handleSessionUpdated = useCallback((payload: unknown) => {
     const event = payload as { sessionKey?: string; label?: string };
-    if (!event?.sessionKey || !event?.label) return;
-    setSessions((prev) =>
-      prev.map((s) =>
-        s.sessionKey === event.sessionKey ? { ...s, label: event.label } : s,
-      ),
-    );
-  }, []);
+    if (!event?.sessionKey) return;
+    setSessions((prev) => {
+      const exists = prev.some((s) => s.sessionKey === event.sessionKey);
+      if (!exists) {
+        // New session appeared — refetch to get full data
+        fetchSessions();
+        return prev;
+      }
+      if (event.label) {
+        return prev.map((s) =>
+          s.sessionKey === event.sessionKey ? { ...s, label: event.label } : s,
+        );
+      }
+      return prev;
+    });
+  }, [fetchSessions]);
   useWsEvent(Events.SESSION_UPDATED, handleSessionUpdated);
 
   const handleNewChat = useCallback(() => {
@@ -75,10 +89,10 @@ export function TroySessions({
       const sessionKey = `agent:${agentId}:ws:direct:${convId}`;
       // Navigate immediately — session created by backend on first message.
       // Association created by TroyChat after first message is sent.
-      onSelect(sessionKey);
+      onNewSession(sessionKey);
       setShowAgentPicker(false);
     },
-    [onSelect],
+    [onNewSession],
   );
 
   return (

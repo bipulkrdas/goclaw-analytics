@@ -19,6 +19,17 @@ func NewSQLiteAssetSessionStore(db *sql.DB) *SQLiteAssetSessionStore {
 
 func (s *SQLiteAssetSessionStore) Create(ctx context.Context, assetID, assetType, sessionKey string) (*store.AssetSession, error) {
 	tenantID := store.TenantIDFromContext(ctx)
+
+	// Check if association already exists to avoid duplicates
+	var count int
+	_ = s.db.QueryRowContext(ctx,
+		`SELECT COUNT(1) FROM asset_sessions WHERE tenant_id = ? AND asset_id = ? AND asset_type = ? AND session_key = ?`,
+		tenantID.String(), assetID, assetType, sessionKey,
+	).Scan(&count)
+	if count > 0 {
+		return nil, nil
+	}
+
 	id := uuid.New()
 	_, err := s.db.ExecContext(ctx,
 		`INSERT INTO asset_sessions (id, tenant_id, asset_id, asset_type, session_key, created_at)

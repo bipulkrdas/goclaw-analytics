@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, lazy, Suspense } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Image,
@@ -10,6 +10,11 @@ import {
   MapPin,
   Download,
   ChevronRight,
+  LayoutDashboard,
+  Copy,
+  Code,
+  Eye,
+  Check,
 } from "lucide-react";
 import { MarkdownRenderer } from "@/components/shared/markdown-renderer";
 import {
@@ -19,6 +24,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { parseRichContent, deduplicateMediaLinks } from "./rich-content-parser";
+
+const LazySandpackRunner = lazy(() => import("./sandpack-runner"));
 
 // --- Renderers for each block type ---
 
@@ -151,6 +158,71 @@ function VideoNoticeBadge({ content }: { content: string }) {
   );
 }
 
+function ArtifactLink({ title, code, dependencies }: { title: string; code: string; template: string; dependencies: Record<string, string> }) {
+  const [open, setOpen] = useState(false);
+  const [showCode, setShowCode] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = useCallback(() => {
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, [code]);
+
+  const handleDownload = useCallback(() => {
+    const blob = new Blob([code], { type: "text/typescript" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "App.tsx";
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [code]);
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="my-1 flex items-center gap-2 rounded-lg border bg-gradient-to-r from-blue-50 to-indigo-50 px-3 py-2 text-sm font-medium text-blue-700 hover:from-blue-100 hover:to-indigo-100 dark:from-blue-950 dark:to-indigo-950 dark:text-blue-300"
+      >
+        <LayoutDashboard className="h-4 w-4" />
+        {title}
+      </button>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-sm:inset-0 sm:max-w-5xl h-[85vh] flex flex-col">
+          <DialogHeader className="flex-row items-center justify-between gap-2">
+            <DialogTitle className="truncate text-base">{title}</DialogTitle>
+            <div className="mr-8 flex items-center gap-1">
+              <button type="button" onClick={() => setShowCode((v) => !v)} className="rounded p-1.5 hover:bg-muted" title={showCode ? "Preview" : "View Code"}>
+                {showCode ? <Eye className="h-4 w-4" /> : <Code className="h-4 w-4" />}
+              </button>
+              <button type="button" onClick={handleCopy} className="rounded p-1.5 hover:bg-muted" title="Copy code">
+                {copied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
+              </button>
+              <button type="button" onClick={handleDownload} className="rounded p-1.5 hover:bg-muted" title="Download">
+                <Download className="h-4 w-4" />
+              </button>
+            </div>
+          </DialogHeader>
+          <div className="flex-1 min-h-0 overflow-hidden rounded-md border">
+            {showCode ? (
+              <pre className="h-full overflow-auto bg-muted/20 p-4 text-xs font-mono">
+                <code>{code}</code>
+              </pre>
+            ) : (
+              <Suspense fallback={<div className="flex h-full items-center justify-center text-sm text-muted-foreground">Loading preview…</div>}>
+                <LazySandpackRunner code={code} dependencies={dependencies} height="100%" />
+              </Suspense>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
 // --- Main component ---
 
 interface RichContentProps {
@@ -186,6 +258,8 @@ export function RichContent({ content, role }: RichContentProps) {
             return <ReplyQuote key={i} sender={block.sender} body={block.body} />;
           case "location":
             return <LocationBadge key={i} lat={block.lat} lng={block.lng} />;
+          case "artifact":
+            return <ArtifactLink key={i} title={block.title} code={block.code} template={block.template} dependencies={block.dependencies} />;
           default:
             return null;
         }

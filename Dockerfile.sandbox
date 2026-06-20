@@ -1,25 +1,73 @@
 FROM debian:bookworm-slim
-  
-  ENV DEBIAN_FRONTEND=noninteractive
-  
-  RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-      bash \
-      ca-certificates \
-      curl \
-      git \
-      jq \
-      python3 \
-      python3-pip \
-      ripgrep \
-      nodejs \
-      npm \
-    && rm -rf /var/lib/apt/lists/* \
-    && mkdir -p /usr/local/lib/node_modules /usr/local/bin \
-    && chmod -R 777 /usr/local/lib/node_modules /usr/local/bin
-  
-  RUN useradd --uid 1000 --create-home --shell /bin/bash sandbox
-  USER sandbox
-  WORKDIR /home/sandbox
-  
-  CMD ["sleep", "infinity"]
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# ── System packages ──
+# Core tools + document processing dependencies
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+    bash \
+    ca-certificates \
+    curl \
+    git \
+    jq \
+    ripgrep \
+    # Python
+    python3 \
+    python3-pip \
+    python3-venv \
+    # Document processing (PDF/PPTX/DOCX skills)
+    libreoffice-writer \
+    libreoffice-impress \
+    libreoffice-calc \
+    poppler-utils \
+    pandoc \
+    # Image processing (matplotlib charts in PDFs)
+    libfreetype6 \
+    libpng16-16 \
+    libjpeg62-turbo \
+    # Fonts (for reportlab + LibreOffice rendering)
+    fonts-liberation \
+    fonts-dejavu-core \
+    fontconfig \
+  && fc-cache -f \
+  && rm -rf /var/lib/apt/lists/*
+
+# ── Node.js 22 LTS (from NodeSource — replaces Debian's old v18) ──
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+  && apt-get install -y nodejs \
+  && rm -rf /var/lib/apt/lists/* \
+  && mkdir -p /usr/local/lib/node_modules /usr/local/bin \
+  && chmod -R 777 /usr/local/lib/node_modules /usr/local/bin
+
+# ── Global npm packages (PPTX/DOCX skills) ──
+RUN npm install -g \
+    pptxgenjs \
+    docx \
+    react \
+    react-dom \
+    react-icons \
+    sharp \
+    "markitdown[pptx]" 2>/dev/null; true
+
+# ── Python packages (PDF/analytics skills) ──
+RUN pip3 install --break-system-packages --no-cache-dir \
+    reportlab \
+    pypdf \
+    pdfplumber \
+    matplotlib \
+    pandas \
+    numpy \
+    scipy \
+    pytz \
+    requests \
+    openpyxl \
+    Pillow \
+    "markitdown[pptx]"
+
+# ── Sandbox user ──
+RUN useradd --uid 1000 --create-home --shell /bin/bash sandbox
+USER sandbox
+WORKDIR /home/sandbox
+
+CMD ["sleep", "infinity"]

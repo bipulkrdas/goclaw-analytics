@@ -109,6 +109,7 @@ When run in sandbox, the script writes:
 
 - Python 3.9+
 - Dependencies: `pandas`, `pytz`, `requests`
+- **pip install flag:** Always use `pip install --break-system-packages` in the sandbox container. Plain `pip install` will fail on system-managed Python environments. Example: `pip install --break-system-packages pandas pytz requests`
 
 ## References
 

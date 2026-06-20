@@ -5,7 +5,7 @@
 ### 1. Get Device Details
 
 ```
-GET /v2/things/{cayenne_id}
+GET /v1.0/admin/things/{thing_id}
 ```
 
 **Response (key fields):**
@@ -27,7 +27,7 @@ GET /v2/things/{cayenne_id}
 ### 2. Get Device Type
 
 ```
-GET /v2/things/types/{device_type_id}
+GET /v1.0/things/types/{device_type_id}
 ```
 
 **Response (key fields):**
@@ -75,12 +75,12 @@ GET /v2/things/types/{device_type_id}
 ### 3. Get Readings
 
 ```
-GET /v2/things/{cayenne_id}/readings?start={start_ms}&end={end_ms}
+GET /v1.0/admin/things/{cayenne_id}/readings?start_ts={start_ms}&end_ts={end_ms}
 ```
 
 **Parameters:**
-- `start` — epoch milliseconds (start of range)
-- `end` — epoch milliseconds (end of range)
+- `start_ts` — epoch milliseconds (start of range)
+- `end_ts` — epoch milliseconds (end of range)
 
 **Response:**
 ```json

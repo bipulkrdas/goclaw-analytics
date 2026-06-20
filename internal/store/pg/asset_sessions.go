@@ -17,6 +17,17 @@ func NewPGAssetSessionStore(db *sql.DB) *PGAssetSessionStore {
 
 func (s *PGAssetSessionStore) Create(ctx context.Context, assetID, assetType, sessionKey string) (*store.AssetSession, error) {
 	tenantID := store.TenantIDFromContext(ctx)
+
+	// Check if association already exists to avoid duplicates
+	var exists bool
+	_ = s.db.QueryRowContext(ctx,
+		`SELECT EXISTS(SELECT 1 FROM asset_sessions WHERE tenant_id = $1 AND asset_id = $2 AND asset_type = $3 AND session_key = $4)`,
+		tenantID, assetID, assetType, sessionKey,
+	).Scan(&exists)
+	if exists {
+		return nil, nil
+	}
+
 	row := &store.AssetSession{}
 	err := s.db.QueryRowContext(ctx,
 		`INSERT INTO asset_sessions (tenant_id, asset_id, asset_type, session_key)
